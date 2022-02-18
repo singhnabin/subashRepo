@@ -1,7 +1,9 @@
 package com.nabinsingh.technovacart.controller;
 
+import com.nabinsingh.technovacart.exception.UserNotFoundException;
 import com.nabinsingh.technovacart.model.User;
 import com.nabinsingh.technovacart.response.ApiResponse;
+import com.nabinsingh.technovacart.response.AppContstant;
 import com.nabinsingh.technovacart.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +22,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/users")
+    @GetMapping(AppContstant.USERSURL)
     public Object getAllUsers(@RequestParam(name = "email",required = false) String email){
         if(email!=null){
             Optional<User> user=userService.getUserByEmail(email);
@@ -38,11 +40,12 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
-    public ResponseEntity<Object> getUserById(@PathVariable Long id){
+    public ResponseEntity<Object> getUserById(@PathVariable Long id) {
         Optional<User> existingUser= userService.getUserById(id);
         if(!existingUser.isPresent()){
             log.error("User with id {} not found",id);
-            return ApiResponse.generateResponse(HttpStatus.BAD_REQUEST,"Request Failed",null,"User with id "+id+" does not exists");
+            throw new UserNotFoundException("User with id "+id+" does not exists");
+            //return ApiResponse.generateResponse(HttpStatus.BAD_REQUEST,AppContstant.REQUESTFAILED,null,"User with id "+id+" does not exists");
         }
         log.error("User with id {}  found",id);
         return ApiResponse.generateResponse(HttpStatus.OK,"User with id "+id +"is available ",existingUser,null);
@@ -65,7 +68,7 @@ public class UserController {
         Optional<User> existingUser= userService.getUserById(id);
         if(!existingUser.isPresent()){
             log.error("User with id {} not found",id);
-            return ApiResponse.generateResponse(HttpStatus.BAD_REQUEST,"Request Failed",null,"User with id "+id+" does not exists");
+            return ApiResponse.generateResponse(HttpStatus.BAD_REQUEST,AppContstant.REQUESTFAILED,null,"User with id "+id+" does not exists");
         }
         userService.deleteUser(id);
         log.info("User with id  {} deleted succcessfully",id);

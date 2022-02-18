@@ -2,6 +2,8 @@ package com.nabinsingh.technovacart;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 public class TechnovaCartApplication {
@@ -10,4 +12,8 @@ public class TechnovaCartApplication {
 		SpringApplication.run(TechnovaCartApplication.class, args);
 	}
 
+	@Bean
+	public RestTemplate getTemplate(){
+		return new RestTemplate();
+	}
 }
